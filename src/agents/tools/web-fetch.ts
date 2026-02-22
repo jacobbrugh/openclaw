@@ -420,7 +420,15 @@ async function runWebFetch(params: {
     release = result.release;
   } catch (error) {
     if (error instanceof SsrFBlockedError) {
-      throw error;
+      // Allow Firecrawl fallback for private-IP blocks (e.g. self-hosted services),
+      // but always block dangerous hostnames (localhost, metadata, .internal, etc.)
+      const isPrivateIpBlock =
+        params.firecrawlEnabled &&
+        params.firecrawlApiKey &&
+        /resolves to private|private\/internal/i.test(error.message);
+      if (!isPrivateIpBlock) {
+        throw error;
+      }
     }
     if (params.firecrawlEnabled && params.firecrawlApiKey) {
       const firecrawl = await fetchFirecrawlContent({
