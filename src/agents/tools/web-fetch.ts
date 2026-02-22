@@ -142,7 +142,8 @@ function resolveFirecrawlBaseUrl(firecrawl?: FirecrawlFetchConfig): string {
     firecrawl && "baseUrl" in firecrawl && typeof firecrawl.baseUrl === "string"
       ? firecrawl.baseUrl.trim()
       : "";
-  return raw || DEFAULT_FIRECRAWL_BASE_URL;
+  const fromEnv = (process.env.FIRECRAWL_BASE_URL ?? "").trim();
+  return raw || fromEnv || DEFAULT_FIRECRAWL_BASE_URL;
 }
 
 function resolveFirecrawlOnlyMainContent(firecrawl?: FirecrawlFetchConfig): boolean {
